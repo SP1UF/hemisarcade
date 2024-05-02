@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<!--Version 1.1-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="pictures/hemislogo.png">
+    <!--<link rel="stylesheet" href="style.css">-->
+    <title>Hemis Arcade</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+         
+        header {
+            background-color: gray;
+            padding: 1rem 0;
+        }
+
+        header img {
+            margin-top: 50px;
+            margin-left: 50px;
+            margin-bottom: -5px;
+        }
+
+        header h1 {
+            margin-top: -50px;
+            margin-left: 125px;
+            margin-bottom: 70px;
+        }
+
+        header div h1 {
+            text-align: center;
+            border-radius: 25px;
+            margin-top: -90px;
+            margin-left: 320px;
+            margin-right: 320px;
+            margin-bottom: 50px;
+        }
+        
+        main {
+            background-color: #303030;
+            padding: 1rem 0;
+        }
+
+        main div {
+            text-align: center;
+            color:blue;
+        }
+
+        main div button {
+            background-color: #04AA6D;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 15px;
+        }
+
+        main div button:hover {
+            background-color: #007748;
+        }
+
+        main canvas {
+            padding-left: 0;
+            padding-right: 0;
+            margin-top: 30px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            width: 800px;
+            border-radius: 15px;
+        }
+
+        footer {
+            background-color: gray;
+            text-align: center;
+            font-weight: bold;
+            padding: 1rem 0;
+            height: 100px;
+        }
+
+        footer p {
+            margin-top: 15px;
+        }
+
+        footer div {
+            margin-left: -800px;
+            margin-top: -40px;
+        }
+
+        footer div a img[src="discordicon.png"]:hover {
+            src: "discordiconhover.png";
+        }
+
+        footer div a img[src="xicon.png"]:hover {
+            src: "xiconhover.png";
+        }
+
+        footer div a img[src="mailicon.png"]:hover {
+            src: "mailiconhover.png";
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <a href="https://hemis.tech/">
+        <img src="pictures/headerlogo.png" alt="HemisLogo">
+        </a>
+        <h1>HEMIS ARCADE</h1>
+        <div>
+            <h1>Hemis Run</h1>
+        </div>
+    </header>
+    <main>
+        <div id="start_banner">
+            <h1>Click on START to start the game!</h1>
+        </div>
+        <div>
+            <button id="start_button" onclick="StartGame()">
+                START!
+            </button>
+        </div>
+        <div id="text_score">
+            Score: 0
+        </div>
+        <div id="text_lives_number">
+
+        </div>
+        <canvas id="board_canvas" width="600px" height="200px">
+        </canvas>
+        <script>
+            let board, drawing;
+            board = document.getElementById("board_canvas");
+            drawing = board.getContext("2d");
+
+            class class_badbot {
+                constructor() {
+                    this.SetBadbot();
+                }
+                SetBadbot() {
+                    this.badbot_x = board.width + 40;
+                    this.badbot_y = 150;
+                    this.badbot_width_x = 10;
+                    this.badbot_height_y = 20;
+                    this.badbot_speed_x = 4;
+                }
+                DrawBadbot() {
+                    drawing.fillStyle = "rgb(255,0,0)";
+                    drawing.fillRect(this.badbot_x,this.badbot_y, this.badbot_width_x,this.badbot_height_y);
+                    this.badbot_x = this.badbot_x - this.badbot_speed_x;
+                    if (this.badbot_x < 0)
+                        this.SetBadbot();
+                        //SetRandomRight_X();
+                }
+                WhetherCollision() {
+                    if ( hemisguy.ReturnRight_X() < this.ReturnLeft_X() )
+                    return false;
+                    if ( hemisguy.ReturnLeft_X() > this.ReturnRight_X() )
+                    return false;
+                    if ( hemisguy.ReturnDown_Y() < this.ReturnUp_Y() )
+                    return false;
+                    if ( hemisguy.ReturnUp_Y() > this.ReturnDown_Y() )
+                    return false;
+                return true;
+                }
+
+                ReturnLeft_X() {
+                    return this.badbot_x;
+               }
+                ReturnRight_X() {
+                    return this.badbot_x + this.badbot_width_x;
+                }
+                ReturnUp_Y() {
+                    return this.badbot_y;
+                }
+                ReturnDown_Y() {
+                    return this.badbot_y + this.badbot_height_y;
+                }
+                SetRight_X(new_x) {
+                    this.badbot_x = new_x-this.badbot_width_x
+                }
+                SetRandomRight_X() {
+                    let random_part;
+                    random_part = 100 + Math.random() * 400;
+                    this.badbot_x = board.width+random_part;               
+                }
+            }
+
+            class class_hemisguy {
+                constructor() {
+                    this.SetHemisguy();
+                }
+        
+                SetHemisguy() {
+                    this.hemisguy_x = 60;
+                    this.hemisguy_y = 120;
+                    this.hemisguy_width_x = 30;
+                    this.hemisguy_height_y = 50;
+                    this.whether_hemisguy_jumping = false;
+                    this.gravity = 0.2;
+                }
+                DrawHemisguy() {
+                    drawing.fillStyle = "rgb(0,255,0)";
+                    drawing.fillRect(this.hemisguy_x,this.hemisguy_y, this.hemisguy_width_x,this.hemisguy_height_y);
+                    if (this.whether_hemisguy_jumping == true) {
+                        this.hemisguy_y = this.hemisguy_y - this.speed;
+                        this.speed = this.speed - this.gravity;
+                    }
+                    if (this.hemisguy_y+this.hemisguy_height_y >= 170)
+                        this.SetHemisguy();
+                    }
+                HemisguyJump() {
+                    if ( this.whether_hemisguy_jumping == false) {
+                        this.whether_hemisguy_jumping = true;
+                        this.speed = 4;
+                    }
+                }
+                ReturnLeft_X() {
+                    return this.hemisguy_x;
+               }
+                ReturnRight_X() {
+                    return this.hemisguy_x + this.hemisguy_width_x;
+                }
+                ReturnUp_Y() {
+                    return this.hemisguy_y;
+                }
+                ReturnDown_Y() {
+                    return this.hemisguy_y + this.hemisguy_height_y;
+                }
+                SetRight_X(nowy_x) {
+                    this.hemisguy_x = new_x-this.hemisguy_width_x;
+                }
+            }
+        function DrawBoard() {
+            drawing.fillStyle = "rgb(244,255,143)";
+            drawing.fillRect(0,0, board.width,board.height);
+        }
+        function DrawFloor() {
+            drawing.fillStyle = "rgb(0,0,0)";
+            drawing.fillRect(0,170, board.width,5);
+        }
+        function UpdateScore() {
+            ++step_number;
+            if ( (step_number%10) == 0 )
+                ++player_score;
+            document.getElementById("text_score").innerHTML = "Score: <strong>" + player_score + "</strong>";
+            document.getElementById("text_lives_number").innerHTML = "";
+
+            if ( (badbot1.WhetherCollision()==true) ) {
+                --lives_number;
+                document.getElementById("text_lives_number").innerHTML = "";
+                if (lives_number <= 0) {
+                document.getElementById("start_banner").innerHTML = "<h1>Game Over :( Try Again!</h1>";
+                clearInterval(animation_handle);
+            }
+        }
+        if ( badbot1.WhetherCollision()==true )
+            badbot1.SetRight_X ( hemisguy.ReturnLeft_X()-1 );
+        }
+        function Game() {
+            DrawBoard();
+            DrawFloor();
+            badbot1.DrawBadbot();
+            badbot2.DrawBadbot();
+            hemisguy.DrawHemisguy();
+            UpdateScore();
+        }
+
+        function SetClickedKey(incident) {
+            if( (incident.key=='Space') || (incident.key=='ArrowUp') ) {
+                hemisguy.HemisguyJump();
+            }
+        }
+        document.addEventListener("keydown", SetClickedKey, false);
+
+        let step_number, player_score, lives_number;
+        let animation_handle;
+        let badbot1, badbot2, hemisguy;
+        
+        step_number = player_score = 0;
+        lives_number = 1;
+
+        badbot1 = new class_badbot();
+        badbot2 = new class_badbot();
+        hemisguy = new class_hemisguy();
+
+        function StartGame() {
+            document.getElementById("start_button").blur();
+            document.getElementById("start_banner").innerHTML = "<h1>Be careful!</h1>";
+            step_number = player_score = 0;
+            hemisguy.SetHemisguy();
+            badbot1.SetBadbot();
+            badbot1.SetRandomRight_X();
+            badbot2.SetBadbot();
+            badbot2.SetRandomRight_X();
+            clearInterval(animation_handle);
+            animation_handle = setInterval(Game, 10);
+        }
+
+        </script>
+        </main>
+        <footer>
+            <p>HEMIS ARCADE<br>
+            Created by SP1UF</p>
+            <div class="social-media-icons">
+                <a href="https://discord.gg/Gfc5mcwTkM">
+                    <img src="pictures/discordicon.png" alt="Discord">
+                </a>
+                <a href="mailto:info@hemis.tech">
+                    <img src="pictures/mailicon.png" alt="E-Mail Contact">
+                </a>
+                <a href="https://x.com/hemisblockchain">
+                    <img src="pictures/xicon.png" alt="X">
+                </a>
+            </div>
+        </footer>
+</body>
+</html>
