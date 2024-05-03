@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!--Version 1.1-->
+<!--Version 1.0-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
 <body>
     <header>
         <a href="https://hemis.tech/">
-        <img src="pictures/headerlogo.png" alt="HemisLogo">
+        <img src="pictures/hemislogo.png" alt="HemisLogo">
         </a>
         <h1>HEMIS ARCADE</h1>
         <div>
@@ -19,6 +19,7 @@
         </div>
     </header>
     <main>
+    <div class="content">
         <div id="start_banner">
             <h1>Click on START to start the game!</h1>
         </div>
@@ -28,7 +29,7 @@
             </button>
         </div>
         <div id="text_score">
-            Score: 0
+            HMS: 0
         </div>
         <div id="text_lives_number">
 
@@ -37,174 +38,178 @@
         </canvas>
         <script>
             let board, drawing;
-            board = document.getElementById("board_canvas");
-            drawing = board.getContext("2d");
+board = document.getElementById("board_canvas");
+drawing = board.getContext("2d");
 
-            class class_badbot {
-                constructor() {
-                    this.SetBadbot();
-                }
-                SetBadbot() {
-                    this.badbot_x = board.width + 40;
-                    this.badbot_y = 150;
-                    this.badbot_width_x = 10;
-                    this.badbot_height_y = 20;
-                    this.badbot_speed_x = 4;
-                }
-                DrawBadbot() {
-                    drawing.fillStyle = "rgb(255,0,0)";
-                    drawing.fillRect(this.badbot_x,this.badbot_y, this.badbot_width_x,this.badbot_height_y);
-                    this.badbot_x = this.badbot_x - this.badbot_speed_x;
-                    if (this.badbot_x < 0)
-                        this.SetBadbot();
-                        //SetRandomRight_X();
-                }
-                WhetherCollision() {
-                    if ( hemisguy.ReturnRight_X() < this.ReturnLeft_X() )
-                    return false;
-                    if ( hemisguy.ReturnLeft_X() > this.ReturnRight_X() )
-                    return false;
-                    if ( hemisguy.ReturnDown_Y() < this.ReturnUp_Y() )
-                    return false;
-                    if ( hemisguy.ReturnUp_Y() > this.ReturnDown_Y() )
-                    return false;
-                return true;
-                }
+class class_badbot {
+    constructor() {
+        this.SetBadbot();
+    }
+    SetBadbot() {
+        this.badbot_x = board.width + 40;
+        this.badbot_y = 140;
+        this.badbot_width_x = 10;
+        this.badbot_height_y = 20;
+        this.badbot_speed_x = 4;
+        this.img = new Image();
+        this.img.src = "pictures/headerlogo.png";
+    }
+    DrawBadbot() {
+        drawing.fillStyle = "rgb(255,0,0)";
+        drawing.drawImage(this.img, this.badbot_x, this.badbot_y, this.badbot_width_x, this.badbot_height_y);
+        this.badbot_x -= this.badbot_speed_x;
+    }
+    WhetherCollision() {
+        return !(
+            hemisguy.ReturnRight_X() < this.ReturnLeft_X() ||
+            hemisguy.ReturnLeft_X() > this.ReturnRight_X() ||
+            hemisguy.ReturnDown_Y() < this.ReturnUp_Y() ||
+            hemisguy.ReturnUp_Y() > this.ReturnDown_Y()
+        );
+    }
+    ReturnLeft_X() {
+        return this.badbot_x;
+    }
+    ReturnRight_X() {
+        return this.badbot_x + this.badbot_width_x;
+    }
+    ReturnUp_Y() {
+        return this.badbot_y;
+    }
+    ReturnDown_Y() {
+        return this.badbot_y + this.badbot_height_y;
+    }
+    SetRight_X(new_x) {
+        this.badbot_x = new_x - this.badbot_width_x;
+    }
+    SetRandomRight_X(x_second_badbot) {
+        let random_part = 100 + Math.random() * 400;
+        this.badbot_x = Math.max(x_second_badbot + random_part, board.width + random_part);
+    }
+}
 
-                ReturnLeft_X() {
-                    return this.badbot_x;
-               }
-                ReturnRight_X() {
-                    return this.badbot_x + this.badbot_width_x;
-                }
-                ReturnUp_Y() {
-                    return this.badbot_y;
-                }
-                ReturnDown_Y() {
-                    return this.badbot_y + this.badbot_height_y;
-                }
-                SetRight_X(new_x) {
-                    this.badbot_x = new_x-this.badbot_width_x
-                }
-                SetRandomRight_X() {
-                    let random_part;
-                    random_part = 100 + Math.random() * 400;
-                    this.badbot_x = board.width+random_part;               
-                }
-            }
-
-            class class_hemisguy {
-                constructor() {
-                    this.SetHemisguy();
-                }
-        
-                SetHemisguy() {
-                    this.hemisguy_x = 60;
-                    this.hemisguy_y = 120;
-                    this.hemisguy_width_x = 30;
-                    this.hemisguy_height_y = 50;
-                    this.whether_hemisguy_jumping = false;
-                    this.gravity = 0.2;
-                }
-                DrawHemisguy() {
-                    drawing.fillStyle = "rgb(0,255,0)";
-                    drawing.fillRect(this.hemisguy_x,this.hemisguy_y, this.hemisguy_width_x,this.hemisguy_height_y);
-                    if (this.whether_hemisguy_jumping == true) {
-                        this.hemisguy_y = this.hemisguy_y - this.speed;
-                        this.speed = this.speed - this.gravity;
-                    }
-                    if (this.hemisguy_y+this.hemisguy_height_y >= 170)
-                        this.SetHemisguy();
-                    }
-                HemisguyJump() {
-                    if ( this.whether_hemisguy_jumping == false) {
-                        this.whether_hemisguy_jumping = true;
-                        this.speed = 4;
-                    }
-                }
-                ReturnLeft_X() {
-                    return this.hemisguy_x;
-               }
-                ReturnRight_X() {
-                    return this.hemisguy_x + this.hemisguy_width_x;
-                }
-                ReturnUp_Y() {
-                    return this.hemisguy_y;
-                }
-                ReturnDown_Y() {
-                    return this.hemisguy_y + this.hemisguy_height_y;
-                }
-                SetRight_X(nowy_x) {
-                    this.hemisguy_x = new_x-this.hemisguy_width_x;
-                }
-            }
-        function DrawBoard() {
-            drawing.fillStyle = "rgb(244,255,143)";
-            drawing.fillRect(0,0, board.width,board.height);
+class class_hemisguy {
+    constructor() {
+        this.SetHemisguy();
+    }
+    SetHemisguy() {
+        this.hemisguy_x = 60;
+        this.hemisguy_y = 120;
+        this.hemisguy_width_x = 30;
+        this.hemisguy_height_y = 50;
+        this.whether_hemisguy_jumping = false;
+        this.gravity = 0.2;
+        this.speed = 0;
+        this.img = new Image();
+        this.img.src = "pictures/hemisguy.png";
+    }
+    DrawHemisguy() {
+        drawing.drawImage(this.img, this.hemisguy_x, this.hemisguy_y, this.hemisguy_width_x, this.hemisguy_height_y);
+        if (this.whether_hemisguy_jumping) {
+            this.hemisguy_y -= this.speed;
+            this.speed -= this.gravity;
         }
-        function DrawFloor() {
-            drawing.fillStyle = "rgb(0,0,0)";
-            drawing.fillRect(0,170, board.width,5);
+        if (this.hemisguy_y + this.hemisguy_height_y >= 170) {
+            this.SetHemisguy();
         }
-        function UpdateScore() {
-            ++step_number;
-            if ( (step_number%10) == 0 )
-                ++player_score;
-            document.getElementById("text_score").innerHTML = "Score: <strong>" + player_score + "</strong>";
-            document.getElementById("text_lives_number").innerHTML = "";
-
-            if ( (badbot1.WhetherCollision()==true) ) {
-                --lives_number;
-                document.getElementById("text_lives_number").innerHTML = "";
-                if (lives_number <= 0) {
-                document.getElementById("start_banner").innerHTML = "<h1>Game Over :( Try Again!</h1>";
-                clearInterval(animation_handle);
-            }
+    }
+    HemisguyJump() {
+        if (!this.whether_hemisguy_jumping) {
+            this.whether_hemisguy_jumping = true;
+            this.speed = 6;
         }
-        if ( badbot1.WhetherCollision()==true )
-            badbot1.SetRight_X ( hemisguy.ReturnLeft_X()-1 );
-        }
-        function Game() {
-            DrawBoard();
-            DrawFloor();
-            badbot1.DrawBadbot();
-            badbot2.DrawBadbot();
-            hemisguy.DrawHemisguy();
-            UpdateScore();
-        }
+    }
+    ReturnLeft_X() {
+        return this.hemisguy_x;
+    }
+    ReturnRight_X() {
+        return this.hemisguy_x + this.hemisguy_width_x;
+    }
+    ReturnUp_Y() {
+        return this.hemisguy_y;
+    }
+    ReturnDown_Y() {
+        return this.hemisguy_y + this.hemisguy_height_y;
+    }
+}
 
-        function SetClickedKey(incident) {
-            if( (incident.key=='Space') || (incident.key=='ArrowUp') ) {
-                hemisguy.HemisguyJump();
-            }
-        }
-        document.addEventListener("keydown", SetClickedKey, false);
+function DrawBoard() {
+    drawing.fillStyle = "rgb(244,255,143)";
+    drawing.fillRect(0, 0, board.width, board.height);
+}
 
-        let step_number, player_score, lives_number;
-        let animation_handle;
-        let badbot1, badbot2, hemisguy;
-        
-        step_number = player_score = 0;
-        lives_number = 1;
+function DrawFloor() {
+    drawing.fillStyle = "rgb(0,0,0)";
+    drawing.fillRect(0, 170, board.width, 5);
+}
 
-        badbot1 = new class_badbot();
-        badbot2 = new class_badbot();
-        hemisguy = new class_hemisguy();
+function UpdateScore() {
+    ++step_number;
+    if (step_number % 10 === 0) {
+        ++player_score;
+    }
+    document.getElementById("text_score").innerHTML = "HMS: <strong>" + player_score + "</strong>";
+    document.getElementById("text_lives_number").innerHTML = "";
 
-        function StartGame() {
-            document.getElementById("start_button").blur();
-            document.getElementById("start_banner").innerHTML = "<h1>Be careful!</h1>";
-            step_number = player_score = 0;
-            hemisguy.SetHemisguy();
-            badbot1.SetBadbot();
-            badbot1.SetRandomRight_X();
-            badbot2.SetBadbot();
-            badbot2.SetRandomRight_X();
+    if (badbot1.WhetherCollision() || badbot2.WhetherCollision()) {
+        --lives_number;
+        if (lives_number <= 0) {
+            document.getElementById("start_banner").innerHTML = "<h1>Game Over :( Try Again!</h1>";
             clearInterval(animation_handle);
-            animation_handle = setInterval(Game, 10);
         }
+    }
+    if (badbot1.WhetherCollision()) {
+        badbot1.SetRight_X(hemisguy.ReturnLeft_X() - 1);
+    }
+    if (badbot2.WhetherCollision()) {
+        badbot2.SetRight_X(hemisguy.ReturnLeft_X() - 1);
+    }
+}
 
+
+function Game() {
+    DrawBoard();
+    DrawFloor();
+    badbot1.DrawBadbot();
+    if (badbot1.badbot_x < 0) {
+        badbot1.SetRandomRight_X(badbot2.ReturnLeft_X());
+    }
+    badbot2.DrawBadbot();
+    if (badbot2.badbot_x < 0) {
+        badbot2.SetRandomRight_X(badbot1.ReturnRight_X());
+    }
+    hemisguy.DrawHemisguy();
+    UpdateScore();
+}
+
+function SetClickedKey(incident) {
+    if (incident.key === 'Space' || incident.key === 'ArrowUp') {
+        hemisguy.HemisguyJump();
+    }
+}
+
+document.addEventListener("keydown", SetClickedKey, false);
+
+let step_number = 0;
+let player_score = 0;
+let lives_number = 1;
+let animation_handle;
+let badbot1, badbot2, hemisguy;
+
+badbot1 = new class_badbot();
+badbot2 = new class_badbot();
+hemisguy = new class_hemisguy();
+
+function StartGame() {
+    document.getElementById("start_button").blur();
+    document.getElementById("start_banner").innerHTML = "<h1>Be careful!</h1>";
+    step_number = player_score = 0;
+    lives_number = 1;
+    clearInterval(animation_handle);
+    animation_handle = setInterval(Game, 10);
+}
         </script>
+    </div>
         </main>
         <footer>
             <p>HEMIS ARCADE<br>
